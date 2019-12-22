@@ -1,13 +1,14 @@
 package com.ecommerce.microcommerce.model;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@JsonFilter("monFiltreDynamique")
+@Entity
 public class Product {
 
+    @Id
     private int id;
+
     private String nom;
     private int prix;
 

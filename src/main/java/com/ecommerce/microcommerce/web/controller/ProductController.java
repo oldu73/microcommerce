@@ -2,12 +2,10 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,32 +18,39 @@ public class ProductController {
     @Autowired
     private ProductDao productDao;
 
-    // Récupérer la liste des produits
+    // Define the logger object for this class
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    //Récupérer la liste des produits
     @RequestMapping(value = "/Produits", method = RequestMethod.GET)
-    public MappingJacksonValue listeProduits() {
-
-        List<Product> produits = productDao.findAll();
-
-        SimpleBeanPropertyFilter monFiltre = SimpleBeanPropertyFilter.serializeAllExcept("prixAchat", "id");
-
-        FilterProvider listeDeNosFiltres = new SimpleFilterProvider().addFilter("monFiltreDynamique", monFiltre);
-
-        MappingJacksonValue produitsFiltres = new MappingJacksonValue(produits);
-
-        produitsFiltres.setFilters(listeDeNosFiltres);
-
-        return produitsFiltres;
+    public List<Product> listeProduits() {
+        return productDao.findAll();
     }
 
-    // Récupérer un produit par son Id
+    //Récupérer un produit par son Id
     @GetMapping(value = "/Produits/{id}")
     public Product afficherUnProduit(@PathVariable int id) {
         return productDao.findById(id);
     }
 
-    // Ajouter un produit
+    @GetMapping(value = "test/prix/{prixLimit}")
+    public List<Product> testeDeRequetes(@PathVariable int prixLimit) {
+        return productDao.findByPrixGreaterThan(prixLimit);
+
+        //todo debug (nice to have), do not work, have a look to ProductController.java?!
+//        return productDao.chercherUnProduitCher(prixLimit);
+    }
+
+    @GetMapping(value = "test/nom/{recherche}")
+    public List<Product> testeDeRequetes(@PathVariable String recherche) {
+        return productDao.findByNomLike("%"+recherche+"%");
+    }
+
+    //Ajouter un produit
     @PostMapping(value = "/Produits")
     public ResponseEntity<Void> ajouterProduit(@RequestBody Product product) {
+
+        log.debug("product to save: " + product);
 
         Product productAdded = productDao.save(product);
 
@@ -60,6 +65,16 @@ public class ProductController {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @DeleteMapping (value = "/Produits/{id}")
+    public void supprimerProduit(@PathVariable int id) {
+        productDao.deleteById(id);
+    }
+
+    @PutMapping (value = "/Produits")
+    public void updateProduit(@RequestBody Product product) {
+        productDao.save(product);
     }
 
 }
