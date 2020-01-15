@@ -36,10 +36,11 @@ public class ProductController {
 
     @GetMapping(value = "test/prix/{prixLimit}")
     public List<Product> testeDeRequetes(@PathVariable int prixLimit) {
-        return productDao.findByPrixGreaterThan(prixLimit);
 
-        //todo debug (nice to have), do not work, have a look to ProductController.java?!
-//        return productDao.chercherUnProduitCher(prixLimit);
+        //        return productDao.findByPrixGreaterThan(prixLimit);
+
+        //Java Persistence Query Language (JPQL)
+        return productDao.chercherUnProduitCher(prixLimit);
     }
 
     @GetMapping(value = "test/nom/{recherche}")

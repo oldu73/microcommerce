@@ -17,7 +17,7 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
 
     List<Product> findByNomLike(String recherche);
 
-    @Query("SELECT id, nom, prix FROM Product p WHERE p.prix > :prixLimit")
+    //Java Persistence Query Language (JPQL)
+    @Query("SELECT NEW com.ecommerce.microcommerce.model.Product(p.id, p.nom, p.prix, p.prixAchat) FROM Product p WHERE p.prix > :prixLimit")
     List<Product> chercherUnProduitCher(@Param("prixLimit") int prix);
-
 }
