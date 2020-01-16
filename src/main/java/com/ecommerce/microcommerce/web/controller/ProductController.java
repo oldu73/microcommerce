@@ -2,14 +2,15 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
+import com.ecommerce.microcommerce.web.exceptions.ProductNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -31,7 +32,12 @@ public class ProductController {
     //Récupérer un produit par son Id
     @GetMapping(value = "/Produits/{id}")
     public Product afficherUnProduit(@PathVariable int id) {
-        return productDao.findById(id);
+
+        Product product = productDao.findById(id);
+
+        if (product == null) throw new ProductNotFoundException("Product with id " + id + " not found!");
+
+        return product;
     }
 
     @GetMapping(value = "test/prix/{prixLimit}")
@@ -50,7 +56,7 @@ public class ProductController {
 
     //Ajouter un produit
     @PostMapping(value = "/Produits")
-    public ResponseEntity<Void> ajouterProduit(@RequestBody Product product) {
+    public ResponseEntity<Void> ajouterProduit(@Valid @RequestBody Product product) {
 
         log.debug("product to save: " + product);
 

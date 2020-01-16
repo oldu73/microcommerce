@@ -1,8 +1,11 @@
 package com.ecommerce.microcommerce.model;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
 
 @Entity
 public class Product {
@@ -11,7 +14,10 @@ public class Product {
     @GeneratedValue
     private int id;
 
+    @Length(min = 3, max = 20)
     private String nom;
+
+    @Min(value = 1, message = "min. value = 1!")
     private int prix;
 
     //a ne pas afficher
