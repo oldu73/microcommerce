@@ -2,6 +2,7 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
+import com.ecommerce.microcommerce.model.ProductMargin;
 import com.ecommerce.microcommerce.web.exceptions.ProductNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(description = "API pour les opérations CRUD sur les produits.")
 @RestController
@@ -89,4 +91,31 @@ public class ProductController {
     public List<Product> testeDeRequetes(@PathVariable String recherche) {
         return productDao.findByNomLike("%"+recherche+"%");
     }
+
+    @GetMapping(value = "/AdminProduits")
+    public List<ProductMargin>  calculerMargeProduit() {
+
+        List<Product> productList = productDao.findAll();
+        List<ProductMargin> productMarginList;
+
+        productMarginList = productList.stream()
+                .map(p -> new ProductMargin(p, p.getPrix() - p.getPrixAchat()))
+                .collect(Collectors.toList());
+
+        return productMarginList;
+
+        //todo output as requested in exercise
+//        {
+//            "Product{id=1, nom='Ordinateur portable', prix=350}": 230,
+//            "Product{id=2, nom='Aspirateur Robot', prix=500}": 300,
+//            "Product{id=3, nom='Table de Ping Pong', prix=750}": 350
+//        }
+
+    }
+
+    @GetMapping(value = "/Produits/trier")
+    public List<Product>  trierProduitsParOrdreAlphabetique() {
+        return productDao.findAllByOrderByNomAsc();
+    }
+
 }
