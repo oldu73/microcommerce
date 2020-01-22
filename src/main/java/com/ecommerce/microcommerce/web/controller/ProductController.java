@@ -4,6 +4,7 @@ import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
 import com.ecommerce.microcommerce.model.ProductMargin;
 import com.ecommerce.microcommerce.web.exceptions.ProductNotFoundException;
+import com.ecommerce.microcommerce.web.exceptions.ProduitGratuitException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -41,7 +42,10 @@ public class ProductController {
 
     //Ajouter un produit
     @PostMapping(value = "/Produits")
-    public ResponseEntity<Product> ajouterProduit(@Valid @RequestBody Product product) throws Exception {
+    public ResponseEntity<Product> ajouterProduit(@Valid @RequestBody Product product) throws ProduitGratuitException {
+
+        if (product.getPrix() == 0) throw new ProduitGratuitException("No free product allowed!");
+
         return new ResponseEntity<>(productDao.save(product), HttpStatus.OK);
     }
 

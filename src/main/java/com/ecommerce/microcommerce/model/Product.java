@@ -18,7 +18,7 @@ public class Product {
     @Length(min = 3, max = 20)
     private String nom;
 
-    @Min(value = 1, message = "min. value = 1!")
+//    @Min(value = 1, message = "min. value = 1!")
     private int prix;
 
     //a ne pas afficher
