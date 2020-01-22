@@ -16,7 +16,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Api(description = "API pour les opérations CRUD sur les produits.")
@@ -79,24 +82,13 @@ public class ProductController {
     }
 
     @GetMapping(value = "/AdminProduits")
-    public List<ProductMargin>  calculerMargeProduit() {
-
+    public Map<String, Integer> calculerMargeProduit() {
         List<Product> productList = productDao.findAll();
-        List<ProductMargin> productMarginList;
+        Map<String, Integer> stringIntegerHashMap;
 
-        productMarginList = productList.stream()
-                .map(p -> new ProductMargin(p, p.getPrix() - p.getPrixAchat()))
-                .collect(Collectors.toList());
+        stringIntegerHashMap = productList.stream().collect(Collectors.toMap(Product::toString, p -> p.getPrix() - p.getPrixAchat()));
 
-        return productMarginList;
-
-        //todo output as requested in exercise
-//        {
-//            "Product{id=1, nom='Ordinateur portable', prix=350}": 230,
-//            "Product{id=2, nom='Aspirateur Robot', prix=500}": 300,
-//            "Product{id=3, nom='Table de Ping Pong', prix=750}": 350
-//        }
-
+        return stringIntegerHashMap;
     }
 
     @GetMapping(value = "/Produits/trier")
